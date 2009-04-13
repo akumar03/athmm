@@ -1,7 +1,3 @@
-package bio;
-
-
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -24,12 +20,33 @@ package bio;
  * or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+package bio;
+
+import java.util.*;
+
 /**
- *
+ * This file contains all the properties used in the program
  * @author akumar03
  */
-public class Config {
-    public static final String ROOT  = "C:\\anoop\\courses\\bio\\research\\function\\local\\";
-    public static final String EXP_FOLDER =  ROOT+"scop95\\";
-    
+public class BioProperties {
+
+    protected static final ResourceBundle sResourceBundle = ResourceBundle.getBundle("bio.BioProperties");
+    protected static Map Cache = new HashMap() {
+        public Object put(Object key, Object value) {
+            if (value == null) {
+                return null;
+            }
+            return super.put(key, value);
+        }
+    };
+    public final static String getString(String key) {
+        String result = null;
+        try {
+            result = sResourceBundle.getString(key);
+        } catch (MissingResourceException mre) {
+            mre.printStackTrace();
+        }
+
+        return result;
+    }
 }
