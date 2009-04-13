@@ -9,20 +9,26 @@
 
 package bio.util;
 
-/**
- *
- * @author akumar03
- */
 
 import java.io.*;
 import java.util.*;
 
+/** This class  reads a file cotaining sequences in fasta format into a list
+ * 
+ * @author akumar03
+ */
 public class FASTASequenceParser {
     
     /** Creates a new instance of FASTASequenceParser */
     public FASTASequenceParser() {
     }
-    
+
+    /**
+     *  reads a single sequence from a file (assumes that file contains only one
+     * sequence
+     * @param inputFile path to input file
+     * @return  Sequence the protein sequence
+     **/
     public static Sequence readSequence(String inputFile) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(inputFile));
         String line = new String();
@@ -36,7 +42,13 @@ public class FASTASequenceParser {
         }
         return s;
     }
-    
+
+    /**
+     * writes a fasta file from a list of sequences
+     * @param fileName filename to output sequence
+     * @param seqList
+     * @throws java.lang.Exception
+     */
     public static  void writeFASTAFile(String fileName,ArrayList<String> seqList) throws Exception{
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
         for(String s:seqList) {
@@ -54,44 +66,15 @@ public class FASTASequenceParser {
         writer.close();
         
     }
+    /**
+     *
+     * @param fileName  absolulte path to the file containing fasta sequences
+     * @param defaultLabel a label when label doesn't exist
+     * @return list of protein sequences
+     * @throws java.lang.Exception
+     */
     
-   public void parse(String inputFile,String outputFile) throws Exception {
-        List<Sequence> sList= new ArrayList<Sequence>();
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        String line = new String();
-        Sequence s = new Sequence();
-        while((line = reader.readLine()) != null) {
-            if(line.startsWith(">")) {
-                if(s.sequence.length() >0) {
-                    sList.add(s);
-                }
-                s = new Sequence();
-                s.label = line;
-                s.sequence = "";
-            } else {
-                s.sequence += line.replaceAll("\\W+","");
-            }
-        }
-        reader.close();
-        printNSequences(1000,sList,outputFile);
-    }
-    
-    public void printNSequences(int n,List<Sequence> sList,String outputFile) throws Exception {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
-        for(int i=1;i<=n;i++ ) {
-            int rnd = (int)(Math.random()*(double)sList.size());
-            Sequence s = sList.get(rnd);
-            sList.remove(rnd);
-            System.out.println("i="+i+"size= "+sList.size()+" Label: "+s.label+" Sequence:"+s.sequence);
-            writer.write(s.label+"_EGF");
-            writer.newLine();
-            writer.write(s.sequence);
-            writer.newLine();
-        }
-        writer.close();
-        
-    }
-    
+
      public static  ArrayList<String> readFASTAFile(String fileName,String defaultLabel) throws Exception {
         BufferedReader seqReader = new BufferedReader(new FileReader(fileName));
         String seqLine  = new String();
@@ -127,7 +110,6 @@ public class FASTASequenceParser {
     public static void main(String[] args) throws Exception{
         // TODO code application logic here
         FASTASequenceParser f = new FASTASequenceParser();
-        f.parse("C:\\anoop\\courses\\bio\\research\\function\\egf\\EGF-like.txt","C:\\anoop\\courses\\bio\\research\\function\\egf\\EGF-like-RAND1001.txt");
         
     }
     
