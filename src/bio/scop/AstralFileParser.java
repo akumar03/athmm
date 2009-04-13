@@ -32,10 +32,11 @@ import bio.util.FASTASequenceParser;
  */
 public class AstralFileParser {
 
+    public static final String EXP_FOLDER = bio.BioProperties.getString("exp.folder");
     public static final int CUTOFF_TRAIN = 10; // atleast 10 seqs in training set
     public static final int CUTOFF_POS_MIN = 10; // atleast 10 positive test sequennces
     public static final int CUTOFF_POS_MAX = 100;
-    private String astralFileName = bio.Config.EXP_FOLDER + "astral.fasta";
+    private String astralFileName = EXP_FOLDER + bio.BioProperties.getString("astral.file");
 
     /**
      *  The method outputs stats of astral file in the format:
@@ -65,7 +66,7 @@ public class AstralFileParser {
                 }
             }
             int classSize = scopFamilyMap.get(classId).size();
-            if (classSize >= CUTOFF_TRAIN && posCount >= CUTOFF_POS_MIN && posCount<= CUTOFF_POS_MAX) {
+            if (classSize >= CUTOFF_TRAIN && posCount >= CUTOFF_POS_MIN && posCount <= CUTOFF_POS_MAX) {
                 System.out.println(classId + "\t" + classSize + "\t" + posCount + "\t" + negCount);
                 writer.write(classId + "\t" + classSize + "\t" + posCount + "\t" + negCount);
                 writer.write("\n");
@@ -99,13 +100,26 @@ public class AstralFileParser {
         return scopFamilyMap;
     }
 
+    public ArrayList<String> readStatFile() throws Exception {
+        String fileName = EXP_FOLDER+bio.BioProperties.getString("astral.stat.file");
+        ArrayList<String> classIds = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        String line = new String();
+        while ((line = reader.readLine()) != null) {
+            String words[] = line.split("\t");
+            classIds.add(words[0]);
+            System.out.println(words[0]);
+        }
+        return classIds;
+    }
+
     public static void main(String[] args) throws Exception {
-        // TODO code application logic here
         AstralFileParser a = new AstralFileParser();
-        java.io.FileWriter writer = new FileWriter(bio.Config.EXP_FOLDER+"astralStats.txt");
+ // generating the stats file
+ //       java.io.FileWriter writer = new FileWriter(EXP_FOLDER + "astralStats.txt");
+ //       a.printStats(writer);
+//        writer.close();
 
-        a.printStats(writer);
-        writer.close();
-
+        a.readStatFile();
     }
 }
