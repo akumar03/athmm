@@ -100,7 +100,10 @@ public class FASTASequenceParser {
         seqList.add(line);
         return seqList;
     }
-     
+
+      public static  ArrayList<String> readFASTAFile(String fileName) throws Exception {
+          return readFASTAFile(fileName,"");
+      }
       
         
  
