@@ -33,19 +33,23 @@ import bio.util.Sequence;
  * @author akumar03
  */
 public class Alignment extends ArrayList<Sequence> {
-
+    public int NEIGHBORS = 4;
     public static final char GAP = '-'; // gap char
     public static final double ALIGN_PT = 0.9;
+    public static final int MAX_SEQUENCE_LENGTH = 10000;
     private int alignmentLength = 0;
+    private int[] alignedColumns;
 
-    public Alignment(ArrayList<String> sequences) {
+    public Alignment(ArrayList<String> sequences) throws Exception {
         super();
         for (String sequence : sequences) {
             Sequence seq = new Sequence(sequence);
             add(seq);
             alignmentLength  = seq.sequence.length();
         }
-
+         alignedColumns = new int[alignmentLength];
+        computeAlignedColumns();
+       
     }
 
     public String getColumn(int i) throws Exception {
@@ -75,16 +79,22 @@ public class Alignment extends ArrayList<Sequence> {
 
    public void printStats(Writer writer) throws Exception {
 
-          for (int i = 0; i < alignmentLength; i++) {
+         for (int i = 0; i < alignmentLength; i++) {
               for(Sequence seq:this) {
                 writer.write(seq.sequence.charAt(i));
               }
               writer.write(",");
               writer.write(""+isColumnMatch(i));
+              if(isColumnMatch(i)) {
+                  writer.write(","+bio.tools.Entropy.getEntropy(getColumn(i)));
+              }
               writer.write("\n");
           }
+         writer.flush();
    }
-
+    public  int[] getAlignedColumns() throws Exception {
+        return this.alignedColumns;
+    }
     public boolean isColumnMatch(int columnId) {
         int count = 0;
         for (Sequence seq : this) {
@@ -97,5 +107,19 @@ public class Alignment extends ArrayList<Sequence> {
             return true;
         }
         return false;
+    }
+
+    public double computeNeighborhoodEntropy(int columnId) throws Exception {
+        
+        return 0.0;
+    }
+      private void computeAlignedColumns() throws Exception {
+        int count =0;
+         for (int i = 0; i < alignmentLength; i++) {
+             if(isColumnMatch(i)) {
+                 alignedColumns[count] = i;
+                 count++;
+             }
+         }
     }
 }
