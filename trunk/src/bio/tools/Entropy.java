@@ -35,7 +35,7 @@ public class Entropy {
      * @return 
      * @throws java.lang.Exception
      */
-    public double getEntropy(String sequence) throws Exception {
+    public static double getEntropy(String sequence) throws Exception {
         sequence = sequence.toUpperCase();
         // gettinng the count of letters
         int[] counts = new int[bio.util.BLOSUM.AA_SIZE];

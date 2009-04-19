@@ -37,7 +37,10 @@ public class AlignmentParser {
     public static void main(String[] args) throws Exception {
         Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+"b.6.1.3_0.aln");
         a.printStats(new PrintWriter(System.out));
-        System.out.println("0:"+a.getColumn(0));
+//        System.out.println("0:"+a.getColumn(0));
+        int[] aColumns = a.getAlignedColumns();
+        System.out.println("match length: "+aColumns.length);
+        bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
         // TODO code application logic here
     }
 
