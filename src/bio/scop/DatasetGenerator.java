@@ -30,7 +30,53 @@ import java.util.*;
  * @author akumar03
  */
 public class DatasetGenerator {
+     public static final int MAX_SIZE = 100;
 
+      public void createTestSet() throws Exception {
+        String fastaFile = bio.BioProperties.getString("exp.folder")+bio.BioProperties.getString("astral.file");
+         AstralFileParser a = new AstralFileParser();
+
+        ArrayList<String> seqList = bio.util.FASTASequenceParser.readFASTAFile(fastaFile,"");
+        ArrayList<String> classList =  a.readStatFile();
+        for(String classId: classList)  {
+                     createTestSet(classId,seqList);
+        }
+    }
+     public void createTestSet(String classId, ArrayList<String> seqList ) throws Exception {
+        ArrayList<String> posList  =new ArrayList<String>();
+        ArrayList<String> negList = new ArrayList<String>();
+        ArrayList<String> writeSeqList = new ArrayList<String>();
+        for(String seq: seqList) {
+            String seqParts[] = seq.split("\t");
+            String labelParts[] = seqParts[1].split(" ");
+            String scopFamily = labelParts[1];
+            int score = bio.scop.Util.compareScopFamily(classId,scopFamily);
+            if(score == 3) {
+                String[]  parts = seq.split("\t");
+                String s = parts[0].replaceAll("\\s+","");
+                s +="\t"+ "positive "+parts[1];
+                posList.add(s);
+            }
+            if(score < 3) {
+                String[]  parts = seq.split("\t");
+                String s = parts[0].replaceAll("\\s+","");
+                s +="\t"+ "negative "+parts[1];
+                negList.add(s);
+            }
+        }
+        int minSize = posList.size();
+        if(negList.size()< minSize) minSize = negList.size();
+        if(MAX_SIZE< minSize) minSize = MAX_SIZE;
+        Collections.shuffle(posList);
+        Collections.shuffle(negList);
+        for(int i = 0;i<minSize;i++) {
+            writeSeqList.add(posList.get(i));
+            writeSeqList.add(negList.get(i));
+        }
+        Collections.shuffle(writeSeqList);
+        String writeFile = bio.BioProperties.getString("exp.folder")+classId+"_test.fasta";
+        bio.util.FASTASequenceParser.writeFASTAFile(writeFile,writeSeqList);
+    }
     public void createTrainingSet() throws Exception {
         AstralFileParser a = new AstralFileParser();
         HashMap<String, ArrayList<String>> scopFamilyMap = a.parseFile();
@@ -68,5 +114,6 @@ public class DatasetGenerator {
     public static void main(String[] args) throws Exception {
         DatasetGenerator d = new DatasetGenerator();
         d.createTrainingSet();
+        d.createTestSet();
     }
 }

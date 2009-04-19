@@ -27,10 +27,22 @@ package bio.util;
  *
  */
 public class Sequence {
+    public static final String SPLIT = "\t";
     public String label = new String();
     public String sequence = new String();
     /** Creates a new instance of Sequence */
     public Sequence() {
+    }
+    /*
+     *  We have two formats for a sequence. One with sequence+"\t"+label and 
+     * other that uses this datastructure. Eventually everything should use this 
+     * datastructure
+     * 
+     **/
+    public Sequence(String sequence) {
+       String[] words = sequence.split(SPLIT);
+       this.label = words[1];
+       this.sequence = words[0];
     }
     
 }

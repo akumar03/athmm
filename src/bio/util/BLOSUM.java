@@ -19,6 +19,7 @@ import java.io.*;
 
 
 public class BLOSUM {
+    public static final int AA_SIZE = 20;
     public static final String PATH = "C:\\anoop\\courses\\bio\\research\\function\\";
     public static final String BLOSUM_FILE = PATH+"SortedBlosum62.csv";
     public static final String AA_LETTERS = "ACDEFGHILKMNPQRSTVWY";
