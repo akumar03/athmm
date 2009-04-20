@@ -23,6 +23,7 @@
 package bio.util;
 
 import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -30,10 +31,10 @@ import java.io.*;
  */
 public class VectorUtils {
 
-    public static void printIntArray(int[] array, Writer writer) throws Exception {
+    public static void printIntArray(ArrayList list, Writer writer) throws Exception {
         writer.write("Printing int array \n");
-        for(int i= 0;i<array.length;i++) {
-            writer.write(""+array[i]);
+       for(Object element: list) {
+            writer.write(""+element);
             writer.append(",");
         }
         writer.write("\n");

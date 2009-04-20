@@ -38,10 +38,10 @@ public class AlignmentParser {
         Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+"b.6.1.3_0.aln");
         a.printStats(new PrintWriter(System.out));
 //        System.out.println("0:"+a.getColumn(0));
-        int[] aColumns = a.getAlignedColumns();
-        System.out.println("match length: "+aColumns.length);
+        ArrayList aColumns = a.getAlignedColumns();
+        System.out.println("match length: "+aColumns.size());
         bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
-        // TODO code application logic here
+
     }
 
 }
