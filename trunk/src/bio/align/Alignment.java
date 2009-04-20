@@ -38,7 +38,8 @@ public class Alignment extends ArrayList<Sequence> {
     public static final double ALIGN_PT = 0.9;
     public static final int MAX_SEQUENCE_LENGTH = 10000;
     private int alignmentLength = 0;
-    private int[] alignedColumns;
+    private ArrayList alignedColumns = new ArrayList();
+
 
     public Alignment(ArrayList<String> sequences) throws Exception {
         super();
@@ -47,7 +48,7 @@ public class Alignment extends ArrayList<Sequence> {
             add(seq);
             alignmentLength  = seq.sequence.length();
         }
-         alignedColumns = new int[alignmentLength];
+
         computeAlignedColumns();
        
     }
@@ -76,23 +77,31 @@ public class Alignment extends ArrayList<Sequence> {
         }
 
     }
-
    public void printStats(Writer writer) throws Exception {
-
+        double[] probs = computeProbilitiesOfMutation() ;
          for (int i = 0; i < alignmentLength; i++) {
+             String s = "";  // temp string
               for(Sequence seq:this) {
-                writer.write(seq.sequence.charAt(i));
+                s += seq.sequence.charAt(i);
               }
-              writer.write(",");
-              writer.write(""+isColumnMatch(i));
+              s += ",";
+              s += isColumnMatch(i);
+
               if(isColumnMatch(i)) {
-                  writer.write(","+bio.tools.Entropy.getEntropy(getColumn(i)));
+                  s +=  ","+bio.tools.Entropy.getEntropy(getColumn(i));
+                   s +=   ","+computeNeighborhoodEntropy(i);
+                   s +=   ","+probs[i];
               }
-              writer.write("\n");
+//              System.out.println(s);
+               writer.write(s);
+               writer.write("\n");
           }
+       
+      
+       
          writer.flush();
    }
-    public  int[] getAlignedColumns() throws Exception {
+    public  ArrayList getAlignedColumns() throws Exception {
         return this.alignedColumns;
     }
     public boolean isColumnMatch(int columnId) {
@@ -110,15 +119,53 @@ public class Alignment extends ArrayList<Sequence> {
     }
 
     public double computeNeighborhoodEntropy(int columnId) throws Exception {
-        
-        return 0.0;
+        int index =  alignedColumns.indexOf(columnId);
+        int min = index-NEIGHBORS;
+        if(min < 0) { min = 0;}
+        int max = index+NEIGHBORS;
+        if(max>=alignedColumns.size()-1) { max = alignedColumns.size()-1;}
+        int total  = max-min+1;
+        double  totalEntropy = 0;
+ //       System.out.println("Computing N entroy cId:"+columnId+" min:"+min+" max: "+max);
+        for(int i = min; i<=max;i++) {
+            totalEntropy += bio.tools.Entropy.getEntropy(getColumn((Integer)alignedColumns.get(i)));
+  //          System.out.println("Total Entroy "+ totalEntropy);
+        }
+
+        return totalEntropy/total;
+    }
+    /**
+     *  The probability of mutation is inversely related to the entropy.  Probabilities are
+     * computed such that expected number of mutations attains a desired rate of mutation
+     * @return
+     * @throws java.lang.Exception
+     */
+    public double[] computeProbilitiesOfMutation() throws Exception {
+        double probs[] = new double[alignmentLength];
+        double[] neighborhoodEntropyInverse = new double[alignmentLength];
+        double sumEInverse = 0.0;
+        for(int i = 0;i<alignmentLength;i++) {
+            if(isColumnMatch(i)) {
+            neighborhoodEntropyInverse[i] = 1/computeNeighborhoodEntropy(i);
+            sumEInverse += neighborhoodEntropyInverse[i];
+            }
+        }
+         for(int i = 0;i<alignmentLength;i++) {
+             if(isColumnMatch(i)) {
+             probs[i] =1/(neighborhoodEntropyInverse[i]*sumEInverse);
+             } else {
+                 probs[i] = 0.0;
+             }
+         }
+        return probs;
+
     }
       private void computeAlignedColumns() throws Exception {
         int count =0;
          for (int i = 0; i < alignmentLength; i++) {
-             if(isColumnMatch(i)) {
-                 alignedColumns[count] = i;
-                 count++;
+              if(isColumnMatch(i)) {
+                 alignedColumns.add(i);
+                  count++;
              }
          }
     }
