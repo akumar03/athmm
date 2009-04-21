@@ -28,6 +28,7 @@ public class BLOSUM {
     public static double[][] probs = new double[20][20];
     public static final double L = 0.347;
     public static boolean loaded = false;
+     static Random random;
     /** Creates a new instance of BLOSUM */
     public BLOSUM() {
     }
@@ -65,7 +66,7 @@ public class BLOSUM {
         if(!loaded) {
             loadBlosum();
         }
-        double rand = Math.random();
+        double rand = random.nextDouble();
         int count = AA_LETTERS.indexOf(c);
         // in case special characters appear
         if(count <0) {
@@ -108,6 +109,8 @@ public class BLOSUM {
         }
     }
     public  static void loadBlosum() throws Exception {
+        //setting the random seed
+        random = new Random();
         BufferedReader reader = new BufferedReader(new FileReader(BLOSUM_FILE));
         String line;
         int count = 0;

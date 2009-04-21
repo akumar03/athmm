@@ -10,4 +10,9 @@
   number of sequences that belong to other fold (-ve test sequences)
 * [family_id]_[mutation].fasta is the fasta file for family with number of mutations
 * .aln are alignment files
-* [family_id]_[test].fasta is the test file for the family with family_id
+* [family_id]_test.fasta is the test file for the family with family_id
+* [family_id]_test_all.fasta test sequences with all -ver sequences
+* [family_id]_0.aln alignment with 0 mutations
+* [family_id]_20.aln alignment with 20% mutations in random positions
+* [family_id]_20NE.aln alignment with 20% mutations with preference to adding mutations in conserved regions
+* [family_id]_20NEX.aln opposite of the 20NE

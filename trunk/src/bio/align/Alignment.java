@@ -33,6 +33,7 @@ import bio.util.Sequence;
  * @author akumar03
  */
 public class Alignment extends ArrayList<Sequence> {
+
     public int NEIGHBORS = 4;
     public static final char GAP = '-'; // gap char
     public static final double ALIGN_PT = 0.9;
@@ -40,25 +41,24 @@ public class Alignment extends ArrayList<Sequence> {
     private int alignmentLength = 0;
     private ArrayList alignedColumns = new ArrayList();
 
-
     public Alignment(ArrayList<String> sequences) throws Exception {
         super();
         for (String sequence : sequences) {
             Sequence seq = new Sequence(sequence);
             add(seq);
-            alignmentLength  = seq.sequence.length();
+            alignmentLength = seq.sequence.length();
         }
 
         computeAlignedColumns();
-       
+
     }
 
     public String getColumn(int i) throws Exception {
         String column = "";
-         for(Sequence seq:this) {
-                column += (char) seq.sequence.charAt(i);
-              }
-         return column;
+        for (Sequence seq : this) {
+            column += (char) seq.sequence.charAt(i);
+        }
+        return column;
     }
 
     public void print() throws Exception {
@@ -69,7 +69,7 @@ public class Alignment extends ArrayList<Sequence> {
 
     public void printMatchStat() throws Exception {
         for (int i = 0; i < alignmentLength; i++) {
-            if(isColumnMatch(i)){
+            if (isColumnMatch(i)) {
                 System.out.print("1");
             } else {
                 System.out.print("0");
@@ -77,33 +77,36 @@ public class Alignment extends ArrayList<Sequence> {
         }
 
     }
-   public void printStats(Writer writer) throws Exception {
-        double[] probs = computeProbilitiesOfMutation() ;
-         for (int i = 0; i < alignmentLength; i++) {
-             String s = "";  // temp string
-              for(Sequence seq:this) {
-                s += seq.sequence.charAt(i);
-              }
-              s += ",";
-              s += isColumnMatch(i);
 
-              if(isColumnMatch(i)) {
-                  s +=  ","+bio.tools.Entropy.getEntropy(getColumn(i));
-                   s +=   ","+computeNeighborhoodEntropy(i);
-                   s +=   ","+probs[i];
-              }
+    public void printStats(Writer writer) throws Exception {
+        double[] probs = computeProbilitiesOfMutation();
+        for (int i = 0; i < alignmentLength; i++) {
+            String s = "";  // temp string
+            for (Sequence seq : this) {
+                s += seq.sequence.charAt(i);
+            }
+            s += ",";
+            s += isColumnMatch(i);
+
+            if (isColumnMatch(i)) {
+                s += "," + bio.tools.Entropy.getEntropy(getColumn(i));
+                s += "," + computeNeighborhoodEntropy(i);
+                s += "," + probs[i];
+            }
 //              System.out.println(s);
-               writer.write(s);
-               writer.write("\n");
-          }
-       
-      
-       
-         writer.flush();
-   }
-    public  ArrayList getAlignedColumns() throws Exception {
+            writer.write(s);
+            writer.write("\n");
+        }
+
+
+
+        writer.flush();
+    }
+
+    public ArrayList getAlignedColumns() throws Exception {
         return this.alignedColumns;
     }
+
     public boolean isColumnMatch(int columnId) {
         int count = 0;
         for (Sequence seq : this) {
@@ -119,21 +122,25 @@ public class Alignment extends ArrayList<Sequence> {
     }
 
     public double computeNeighborhoodEntropy(int columnId) throws Exception {
-        int index =  alignedColumns.indexOf(columnId);
-        int min = index-NEIGHBORS;
-        if(min < 0) { min = 0;}
-        int max = index+NEIGHBORS;
-        if(max>=alignedColumns.size()-1) { max = alignedColumns.size()-1;}
-        int total  = max-min+1;
-        double  totalEntropy = 0;
- //       System.out.println("Computing N entroy cId:"+columnId+" min:"+min+" max: "+max);
-        for(int i = min; i<=max;i++) {
-            totalEntropy += bio.tools.Entropy.getEntropy(getColumn((Integer)alignedColumns.get(i)));
-  //          System.out.println("Total Entroy "+ totalEntropy);
+        int index = alignedColumns.indexOf(columnId);
+        int min = index - NEIGHBORS;
+        if (min < 0) {
+            min = 0;
         }
-
-        return totalEntropy/total;
+        int max = index + NEIGHBORS;
+        if (max >= alignedColumns.size() - 1) {
+            max = alignedColumns.size() - 1;
+        }
+        int total = max - min + 1;
+        double totalEntropy = 0;
+        //       System.out.println("Computing N entroy cId:"+columnId+" min:"+min+" max: "+max);
+        for (int i = min; i <= max; i++) {
+            totalEntropy += bio.tools.Entropy.getEntropy(getColumn((Integer) alignedColumns.get(i)));
+        //          System.out.println("Total Entroy "+ totalEntropy);
+        }
+        return totalEntropy / total;
     }
+
     /**
      *  The probability of mutation is inversely related to the entropy.  Probabilities are
      * computed such that expected number of mutations attains a desired rate of mutation
@@ -144,29 +151,87 @@ public class Alignment extends ArrayList<Sequence> {
         double probs[] = new double[alignmentLength];
         double[] neighborhoodEntropyInverse = new double[alignmentLength];
         double sumEInverse = 0.0;
-        for(int i = 0;i<alignmentLength;i++) {
-            if(isColumnMatch(i)) {
-            neighborhoodEntropyInverse[i] = 1/computeNeighborhoodEntropy(i);
-            sumEInverse += neighborhoodEntropyInverse[i];
+        for (int i = 0; i < alignmentLength; i++) {
+            if (isColumnMatch(i)) {
+                neighborhoodEntropyInverse[i] = 1 / computeNeighborhoodEntropy(i);
+                sumEInverse += neighborhoodEntropyInverse[i];
             }
         }
-         for(int i = 0;i<alignmentLength;i++) {
-             if(isColumnMatch(i)) {
-             probs[i] =1/(neighborhoodEntropyInverse[i]*sumEInverse);
-             } else {
-                 probs[i] = 0.0;
-             }
-         }
+        for (int i = 0; i < alignmentLength; i++) {
+            if (isColumnMatch(i)) {
+                probs[i] = 1 / (neighborhoodEntropyInverse[i] * sumEInverse);
+            } else {
+                probs[i] = 0.0;
+            }
+        }
         return probs;
-
     }
-      private void computeAlignedColumns() throws Exception {
-        int count =0;
-         for (int i = 0; i < alignmentLength; i++) {
-              if(isColumnMatch(i)) {
-                 alignedColumns.add(i);
-                  count++;
-             }
-         }
+
+    public double[] computeProbabilitiesOfMutationNEX() throws Exception {
+        double probs[] = new double[alignmentLength];
+        double[] neighborhoodEntropyInverse = new double[alignmentLength];
+        double sumEInverse = 0.0;
+        for (int i = 0; i < alignmentLength; i++) {
+            if (isColumnMatch(i)) {
+                neighborhoodEntropyInverse[i] = computeNeighborhoodEntropy(i);
+                sumEInverse += neighborhoodEntropyInverse[i];
+            }
+        }
+        for (int i = 0; i < alignmentLength; i++) {
+            if (isColumnMatch(i)) {
+                probs[i] = neighborhoodEntropyInverse[i] / sumEInverse;
+            } else {
+                probs[i] = 0.0;
+            }
+        }
+        return probs;
+    }
+    /**
+     *  The method appends an alignment with mutated seqeunces. Mutations are
+     *  added a specified mutation rate. N is the number of sequences added.
+     * @param mutationRate
+     * @param N
+     * @throws java.lang.Exception
+     */
+    public void appendMutatedSequences(double mutationRate, int N) throws Exception {
+        for(Sequence s: this) {
+            for(int i=0;i<N;i++) {
+                Sequence sMutated = new Sequence();
+                sMutated.label  = s.label+"|mut"+i+"|";
+            }
+        }
+    }
+    private String mutateRandom(double mutationRate, String s) throws Exception {
+        String r = s; //return string
+        double[] probs = computeProbilitiesOfMutation();
+        int mutations = (int) (mutationRate * alignedColumns.size());
+
+ //           char subChar =  bio.util.BLOSUM.getRandom(r.charAt(i));
+ //           r = r.substring(0,i)+subChar+s.substring(i+1);
+
+        return r;
+    }
+    public void write(Writer writer) throws Exception {
+        for (Sequence sequence : this) {
+            writer.write(">" + sequence.label);
+            writer.write("\n");
+            for (int i = 0; i <= sequence.sequence.length() / 50; i++) {
+                int start = i * 50;
+                int stop = start + 50 > sequence.sequence.length() ? sequence.sequence.length() : start + 50;
+                writer.write(sequence.sequence.substring(start, stop));
+                writer.write("\n");
+            }
+        }
+        writer.flush();
+    }
+
+    private void computeAlignedColumns() throws Exception {
+        int count = 0;
+        for (int i = 0; i < alignmentLength; i++) {
+            if (isColumnMatch(i)) {
+                alignedColumns.add(i);
+                count++;
+            }
+        }
     }
 }

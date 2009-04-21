@@ -82,12 +82,11 @@ public class DatasetGenerator {
         HashMap<String, ArrayList<String>> scopFamilyMap = a.parseFile();
         ArrayList<String> classList = a.readStatFile();
         for (String classId : classList) {
-
             createHMMTrainingSet(classId, scopFamilyMap.get(classId));
-
         }
     }
 
+    
     public void createHMMTrainingSet(String classId, ArrayList<String> seqList) throws Exception {
         System.out.println("Creating Training set for " + classId + " with 0 mutations");
         String writeFile = bio.BioProperties.getString("exp.folder") + classId + "_0.fasta";
