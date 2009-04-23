@@ -24,35 +24,65 @@ package bio.align;
 
 import java.io.*;
 import java.util.*;
+import bio.scop.AstralFileParser;
+
 /**
  *
  * @author akumar03
  */
 public class HMMTrainingSetGenerator {
+
     public static final String EXT_ALN = ".aln";
+    public static final int N = 10; // number of mutated sequences to be added
+
     public void createMutatedHMMTrainingSet(String classId) throws Exception {
-        String fileName = bio.BioProperties.getString("exp.folder")+classId+"_0"+EXT_ALN;
-        Alignment alignment =AlignmentParser.parse(fileName);
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_20" + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.appendMutatedSequences(Double.parseDouble(bio.BioProperties.getString("mutation.rate")), N, classId);
+        alignment.write(writer);
 
-        
     }
+
     public void createNEHMMTrainingSet(String classId) throws Exception {
-
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_20NE" + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.appendMutatedSequencesNE(Double.parseDouble(bio.BioProperties.getString("mutation.rate")), N, classId);
+        alignment.write(writer);
     }
-    public void createNEXHMMTrainingSet(String classId) throws Exception {
 
+    public void createNEXHMMTrainingSet(String classId) throws Exception {
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_20NEX" + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.appendMutatedSequencesNEX(Double.parseDouble(bio.BioProperties.getString("mutation.rate")), N, classId);
+        alignment.write(writer);
     }
 
     public void createAllTrainingSet() throws Exception {
-        
+//        String classId = "b.6.1.3";
+        AstralFileParser a = new AstralFileParser();
+        ArrayList<String> classList = a.readStatFile();
+        for (String classId : classList) {
+            createMutatedHMMTrainingSet(classId);
+            createNEHMMTrainingSet(classId);
+            createNEXHMMTrainingSet(classId);
+            System.out.println("Generated Training files for: "+classId);
+            Thread.sleep(10);
+        }
     }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
         HMMTrainingSetGenerator h = new HMMTrainingSetGenerator();
-        h.createMutatedHMMTrainingSet("b.6.1.3");
+        h.createAllTrainingSet();
+//        h.createNEHMMTrainingSet("d.2.1.3");
     }
-
 }

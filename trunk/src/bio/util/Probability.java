@@ -49,6 +49,7 @@ public class Probability {
                     flag = false;
                     x[i] = j-1;
                 } else {
+ //                   System.out.println(j+":"+newRandom+":"+probs[j]);
                     newRandom -= probs[j];
                     j++;
                 }

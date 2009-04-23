@@ -149,6 +149,19 @@ public class Alignment extends ArrayList<Sequence> {
      */
     public double[] computeProbilitiesOfMutation() throws Exception {
         double probs[] = new double[alignmentLength];
+        for (int i = 0; i < alignmentLength; i++) {
+//            System.out.println("CM:"+i+":"+isColumnMatch(i));
+            if (isColumnMatch(i)) {
+                probs[i] = 1.0 / alignedColumns.size();
+            } else {
+                probs[i] = 0.0;
+            }
+        }
+        return probs;
+    }
+
+    public double[] computeProbilitiesOfMutationNE() throws Exception {
+        double probs[] = new double[alignmentLength];
         double[] neighborhoodEntropyInverse = new double[alignmentLength];
         double sumEInverse = 0.0;
         for (int i = 0; i < alignmentLength; i++) {
@@ -159,7 +172,7 @@ public class Alignment extends ArrayList<Sequence> {
         }
         for (int i = 0; i < alignmentLength; i++) {
             if (isColumnMatch(i)) {
-                probs[i] = 1 / (neighborhoodEntropyInverse[i] * sumEInverse);
+                probs[i] =  neighborhoodEntropyInverse[i] / sumEInverse;
             } else {
                 probs[i] = 0.0;
             }
@@ -186,6 +199,7 @@ public class Alignment extends ArrayList<Sequence> {
         }
         return probs;
     }
+
     /**
      *  The method appends an alignment with mutated seqeunces. Mutations are
      *  added a specified mutation rate. N is the number of sequences added.
@@ -193,24 +207,93 @@ public class Alignment extends ArrayList<Sequence> {
      * @param N
      * @throws java.lang.Exception
      */
-    public void appendMutatedSequences(double mutationRate, int N) throws Exception {
-        for(Sequence s: this) {
-            for(int i=0;i<N;i++) {
+    public void appendMutatedSequences(double mutationRate, int N, String classId) throws Exception {
+        ArrayList<Sequence> newSequences = new ArrayList<Sequence>();
+        for (Sequence s : this) {
+            String[] labelParts = s.label.split("\\|");
+            s.label = labelParts[0] + "|mut" + 0 + "|" + classId + "|";
+            for (int i = 1; i <= N; i++) {
                 Sequence sMutated = new Sequence();
-                sMutated.label  = s.label+"|mut"+i+"|";
+                sMutated.label = labelParts[0] + "|mut" + i + "|" + classId + "|";
+                sMutated.sequence = mutateRandom(mutationRate, s.sequence);
+                newSequences.add(sMutated);
             }
         }
+
+        addAll(newSequences);
     }
+
+    public void appendMutatedSequencesNE(double mutationRate, int N, String classId) throws Exception {
+        ArrayList<Sequence> newSequences = new ArrayList<Sequence>();
+        for (Sequence s : this) {
+            String[] labelParts = s.label.split("\\|");
+            s.label = labelParts[0] + "|mut" + 0 + "|" + classId + "|";
+            for (int i = 1; i <= N; i++) {
+                Sequence sMutated = new Sequence();
+                sMutated.label = labelParts[0] + "|mut" + i + "|" + classId + "|";
+                sMutated.sequence = mutateNE(mutationRate, s.sequence);
+                newSequences.add(sMutated);
+            }
+        }
+
+        addAll(newSequences);
+    }
+
+    public void appendMutatedSequencesNEX(double mutationRate, int N, String classId) throws Exception {
+        ArrayList<Sequence> newSequences = new ArrayList<Sequence>();
+        for (Sequence s : this) {
+            String[] labelParts = s.label.split("\\|");
+            s.label = labelParts[0] + "|mut" + 0 + "|" + classId + "|";
+            for (int i = 1; i <= N; i++) {
+                Sequence sMutated = new Sequence();
+                sMutated.label = labelParts[0] + "|mut" + i + "|" + classId + "|";
+                sMutated.sequence = mutateNEX(mutationRate, s.sequence);
+                newSequences.add(sMutated);
+            }
+        }
+
+        addAll(newSequences);
+    }
+
     private String mutateRandom(double mutationRate, String s) throws Exception {
         String r = s; //return string
         double[] probs = computeProbilitiesOfMutation();
         int mutations = (int) (mutationRate * alignedColumns.size());
-
- //           char subChar =  bio.util.BLOSUM.getRandom(r.charAt(i));
- //           r = r.substring(0,i)+subChar+s.substring(i+1);
-
+        int mutationPositions[] = bio.util.Probability.getRandomNumbers(mutations, probs);
+        for (int i = 0; i < mutationPositions.length; i++) {
+            int positionId = mutationPositions[i];
+            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId));
+            r = r.substring(0, positionId) + subChar + s.substring(positionId + 1);
+        }
         return r;
     }
+
+    private String mutateNE(double mutationRate, String s) throws Exception {
+        String r = s; //return string
+        double[] probs = computeProbilitiesOfMutationNE();
+        int mutations = (int) (mutationRate * alignedColumns.size());
+        int mutationPositions[] = bio.util.Probability.getRandomNumbers(mutations, probs);
+        for (int i = 0; i < mutationPositions.length; i++) {
+            int positionId = mutationPositions[i];
+            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId));
+            r = r.substring(0, positionId) + subChar + s.substring(positionId + 1);
+        }
+        return r;
+    }
+
+    private String mutateNEX(double mutationRate, String s) throws Exception {
+        String r = s; //return string
+        double[] probs = computeProbabilitiesOfMutationNEX();
+        int mutations = (int) (mutationRate * alignedColumns.size());
+        int mutationPositions[] = bio.util.Probability.getRandomNumbers(mutations, probs);
+        for (int i = 0; i < mutationPositions.length; i++) {
+            int positionId = mutationPositions[i];
+            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId));
+            r = r.substring(0, positionId) + subChar + s.substring(positionId + 1);
+        }
+        return r;
+    }
+
     public void write(Writer writer) throws Exception {
         for (Sequence sequence : this) {
             writer.write(">" + sequence.label);
