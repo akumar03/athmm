@@ -64,17 +64,21 @@ public class DatasetGenerator {
                 negList.add(s);
             }
         }
-        int minSize = posList.size();
-        if(negList.size()< minSize) minSize = negList.size();
-        if(MAX_SIZE< minSize) minSize = MAX_SIZE;
-        Collections.shuffle(posList);
-        Collections.shuffle(negList);
-        for(int i = 0;i<minSize;i++) {
-            writeSeqList.add(posList.get(i));
-            writeSeqList.add(negList.get(i));
-        }
+ // this is the mode  with all tthe negative sequences. Commented the code
+ // which makes equal positive and negative sequences
+//        int minSize = posList.size();
+//        if(negList.size()< minSize) minSize = negList.size();
+//        if(MAX_SIZE< minSize) minSize = MAX_SIZE;
+//       Collections.shuffle(posList);
+//        Collections.shuffle(negList);
+//        for(int i = 0;i<minSize;i++) {
+//            writeSeqList.add(posList.get(i));
+ //           writeSeqList.add(negList.get(i));
+ //       }
+        writeSeqList.addAll(posList);
+        writeSeqList.addAll(negList);
         Collections.shuffle(writeSeqList);
-        String writeFile = bio.BioProperties.getString("exp.folder")+classId+"_test.fasta";
+        String writeFile = bio.BioProperties.getString("exp.folder")+classId+"_test_all.fasta";
         bio.util.FASTASequenceParser.writeFASTAFile(writeFile,writeSeqList);
     }
     public void createTrainingSet() throws Exception {
@@ -102,6 +106,7 @@ public class DatasetGenerator {
 
     }
 
+
     public String getAnnotatedSequence(String sequence, String annotation, int mut) {
         String s = new String();
         String[] seqParts = sequence.split("\t");
@@ -112,7 +117,7 @@ public class DatasetGenerator {
 
     public static void main(String[] args) throws Exception {
         DatasetGenerator d = new DatasetGenerator();
-        d.createTrainingSet();
+//        d.createTrainingSet();
         d.createTestSet();
     }
 }

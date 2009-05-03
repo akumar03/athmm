@@ -107,6 +107,28 @@ public class Alignment extends ArrayList<Sequence> {
         return this.alignedColumns;
     }
 
+    public double getMeanNeighborEntropy() throws Exception {
+        double mean = 0.0;
+
+        for(int i=0;i<this.alignedColumns.size();i++) {
+            int columnId = (Integer)alignedColumns.get(i);
+            mean += computeNeighborhoodEntropy(columnId);
+        }
+        mean = mean/this.alignedColumns.size();
+        return mean;
+    }
+
+    public double getSDNeighborEntropy()  throws Exception {
+        double sqMean = 0.0;
+        double meanEntropy = getMeanNeighborEntropy();
+        for(int i=0;i<this.alignedColumns.size();i++) {
+            int columnId = (Integer)alignedColumns.get(i);
+            double nEntropy =  computeNeighborhoodEntropy(columnId);
+            sqMean = Math.pow(nEntropy-meanEntropy,2.0);
+        }
+        sqMean = sqMean/this.alignedColumns.size();
+        return Math.sqrt(sqMean);
+    }
     public boolean isColumnMatch(int columnId) {
         int count = 0;
         for (Sequence seq : this) {
@@ -317,4 +339,6 @@ public class Alignment extends ArrayList<Sequence> {
             }
         }
     }
+
+
 }

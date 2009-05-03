@@ -35,12 +35,21 @@ public class AlignmentParser {
         return new Alignment(sequences);
     }
     public static void main(String[] args) throws Exception {
-        Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+"b.6.1.3_0.aln");
-        a.printStats(new PrintWriter(System.out));
+
+
+//        Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+"b.6.1.3_0.aln");
+//        a.printStats(new PrintWriter(System.out));
 //        System.out.println("0:"+a.getColumn(0));
-        ArrayList aColumns = a.getAlignedColumns();
-        System.out.println("match length: "+aColumns.size());
-        bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
+//        ArrayList aColumns = a.getAlignedColumns();
+//        System.out.println("match length: "+aColumns.size());
+//        bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
+         bio.scop.AstralFileParser a = new bio.scop.AstralFileParser() {
+            public void runMethod(String classId) throws Exception {
+                  Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_0.aln");
+                  System.out.println(classId+"\t"+a.getMeanNeighborEntropy()+"\t"+a.getSDNeighborEntropy());
+            }
+        };
+        a.runForAllClass();
 
     }
 
