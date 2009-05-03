@@ -113,6 +113,16 @@ public class AstralFileParser {
         return classIds;
     }
 
+    public void runForAllClass()throws Exception {
+        ArrayList<String> classList = this.readStatFile();
+        for (String classId : classList) {
+            runMethod(classId);
+        }
+    }
+
+    public void runMethod(String ClassId) throws Exception {
+
+    }
     public static void main(String[] args) throws Exception {
         AstralFileParser a = new AstralFileParser();
  // generating the stats file
