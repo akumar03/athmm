@@ -80,6 +80,12 @@ public class ROC {
         }
         return auc;
     }
+    public double getAUC(String classId,String fileExtension) throws Exception {
+          HMMOutputParser h = new HMMOutputParser();
+         String fileName = bio.BioProperties.getString("exp.folder") + classId + fileExtension + EXT_HIT;
+          ArrayList<Hit>   hits = h.parseHMMHitFile(fileName, classId);
+         return auc(hits);
+    }
 
       public static void printAll(String classId) throws Exception {
           ROC r = new ROC();

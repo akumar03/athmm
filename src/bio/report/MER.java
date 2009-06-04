@@ -52,7 +52,11 @@ public class MER {
         }
         return mer;
     }
-
+ public double getMER(String classId,String fileExtension) throws Exception {
+          HMMOutputParser h = new HMMOutputParser();
+         String fileName = bio.BioProperties.getString("exp.folder") + classId + fileExtension + EXT_HIT;
+         return computeMER(fileName,classId);
+    }
     public double computeCoverage(String fileName, String classId ) throws Exception {
         HMMOutputParser h = new HMMOutputParser();
         ArrayList<Hit> hits = h.parseHMMHitFile(fileName, classId);

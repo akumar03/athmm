@@ -54,6 +54,26 @@ public class HMMTrainingSetGenerator {
         alignment.write(writer);
     }
 
+    public void createMutatedHMMTrainingSet(String classId, int mPercent) throws Exception {
+        double mRate = (double)mPercent/100;
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+mPercent+ EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.appendMutatedSequences( mRate, N, classId);
+        alignment.write(writer);
+
+    }
+
+    public void createNEHMMTrainingSet(String classId, int mPercent) throws Exception {
+         double mRate = (double)mPercent/100;
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+mPercent+"NE" + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.appendMutatedSequencesNE(mRate, N, classId);
+        alignment.write(writer);
+    }
     public void createNEXHMMTrainingSet(String classId) throws Exception {
         String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
         String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_20NEX" + EXT_ALN;
@@ -76,13 +96,29 @@ public class HMMTrainingSetGenerator {
         }
     }
 
+    public void createMutatedTrainingSets(String classId) throws Exception {
+
+
+        for(int mPercent =10;mPercent<=60;mPercent+= 10) {
+
+            createMutatedHMMTrainingSet(classId,mPercent);
+             createNEHMMTrainingSet(classId,mPercent);;
+
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
         HMMTrainingSetGenerator h = new HMMTrainingSetGenerator();
-        h.createAllTrainingSet();
+//        h.createAllTrainingSet();
 //        h.createNEHMMTrainingSet("d.2.1.3");
+         AstralFileParser a = new AstralFileParser();
+        ArrayList<String> classList = a.readStatFile();
+        for (String classId : classList) {
+            h.createMutatedTrainingSets(classId);
+        }
     }
 }
