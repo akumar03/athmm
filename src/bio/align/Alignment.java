@@ -106,6 +106,17 @@ public class Alignment extends ArrayList<Sequence> {
     public ArrayList getAlignedColumns() throws Exception {
         return this.alignedColumns;
     }
+ 
+    
+    public double getMeanEntropy() throws Exception {
+        double mean = 0.0;
+        for(int i=0;i<this.alignedColumns.size();i++) {
+            int columnId = (Integer)alignedColumns.get(i);
+            mean += bio.tools.Entropy.getEntropy(getColumn(columnId));
+        }
+         mean = mean/this.alignedColumns.size();
+         return mean;
+    }
 
     public double getMeanNeighborEntropy() throws Exception {
         double mean = 0.0;
@@ -142,6 +153,8 @@ public class Alignment extends ArrayList<Sequence> {
         }
         return false;
     }
+
+
 
     public double computeNeighborhoodEntropy(int columnId) throws Exception {
         int index = alignedColumns.indexOf(columnId);
