@@ -34,7 +34,7 @@ import bio.util.Sequence;
  */
 public class Alignment extends ArrayList<Sequence> {
 
-    public int NEIGHBORS = 4;
+    public int NEIGHBORS = 4; // number of residues on each side
     public static final char GAP = '-'; // gap char
     public static final double ALIGN_PT = 0.9;
     public static final int MAX_SEQUENCE_LENGTH = 10000;

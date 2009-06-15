@@ -50,11 +50,14 @@ public class AlignmentParser {
 //        bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
          bio.scop.AstralFileParser a = new bio.scop.AstralFileParser() {
             public void runMethod(String classId) throws Exception {
+                System.out.print(classId+"\t");
                  for(int mPercent =10;mPercent<=60;mPercent+= 10) {
+                      ROC roc = new ROC();
                     Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_"+mPercent+".aln");
                      Alignment na = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_"+mPercent+"NE.aln");
-                    System.out.print(df.format(a.getMeanNeighborEntropy())+"\t");
-                    System.out.print(df.format(na.getMeanNeighborEntropy())+"\t");
+                     System.out.print(df.format(roc.getAUC(classId, "_"+mPercent))+"\t"+df.format(roc.getAUC(classId, "_"+mPercent+"NE"))+"\t");
+//                    System.out.print(df.format(a.getMeanEntropy())+"\t");
+//                    System.out.print(df.format(na.getMeanEntropy())+"\t");
                  }
                  System.out.println();
 //                  Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_0.aln");
