@@ -34,13 +34,13 @@ import bio.util.Sequence;
  */
 public class Alignment extends ArrayList<Sequence> {
 
-    public int NEIGHBORS = 4; // number of residues on each side
+    public int NEIGHBORS = 2; // number of residues on each side
     public static final char GAP = '-'; // gap char
     public static final double ALIGN_PT = 0.9;
     public static final int MAX_SEQUENCE_LENGTH = 10000;
     private int alignmentLength = 0;
     private ArrayList alignedColumns = new ArrayList();
-
+ 
     public Alignment(ArrayList<String> sequences) throws Exception {
         super();
         for (String sequence : sequences) {
@@ -53,6 +53,9 @@ public class Alignment extends ArrayList<Sequence> {
 
     }
 
+    public int getAlignmentLength() {
+        return alignmentLength;
+    }
     public String getColumn(int i) throws Exception {
         String column = "";
         for (Sequence seq : this) {
@@ -77,7 +80,7 @@ public class Alignment extends ArrayList<Sequence> {
         }
 
     }
-
+    
     public void printStats(Writer writer) throws Exception {
         double[] probs = computeProbilitiesOfMutation();
         for (int i = 0; i < alignmentLength; i++) {
@@ -157,12 +160,16 @@ public class Alignment extends ArrayList<Sequence> {
 
 
     public double computeNeighborhoodEntropy(int columnId) throws Exception {
-        int index = alignedColumns.indexOf(columnId);
-        int min = index - NEIGHBORS;
+        return computeNeighborhoodEntropy(columnId,NEIGHBORS);
+    }
+
+    public double computeNeighborhoodEntropy(int columnId,int neighbors) throws Exception {
+         int index = alignedColumns.indexOf(columnId);
+        int min = index - neighbors;
         if (min < 0) {
             min = 0;
         }
-        int max = index + NEIGHBORS;
+        int max = index + neighbors;
         if (max >= alignedColumns.size() - 1) {
             max = alignedColumns.size() - 1;
         }
@@ -175,7 +182,6 @@ public class Alignment extends ArrayList<Sequence> {
         }
         return totalEntropy / total;
     }
-
     /**
      *  The probability of mutation is inversely related to the entropy.  Probabilities are
      * computed such that expected number of mutations attains a desired rate of mutation

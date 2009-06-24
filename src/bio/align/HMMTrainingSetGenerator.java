@@ -107,17 +107,20 @@ public class HMMTrainingSetGenerator {
         }
     }
 
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
+        
         HMMTrainingSetGenerator h = new HMMTrainingSetGenerator();
 //        h.createAllTrainingSet();
 //        h.createNEHMMTrainingSet("d.2.1.3");
          AstralFileParser a = new AstralFileParser();
         ArrayList<String> classList = a.readStatFile();
         for (String classId : classList) {
+            System.out.println("Generating Datasets for:"+classId);
             h.createMutatedTrainingSets(classId);
         }
     }
