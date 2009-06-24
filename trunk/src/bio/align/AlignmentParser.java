@@ -50,15 +50,26 @@ public class AlignmentParser {
 //        bio.util.VectorUtils.printIntArray(aColumns, new PrintWriter(System.out));
          bio.scop.AstralFileParser a = new bio.scop.AstralFileParser() {
             public void runMethod(String classId) throws Exception {
-                System.out.print(classId+"\t");
-                 for(int mPercent =10;mPercent<=60;mPercent+= 10) {
-                      ROC roc = new ROC();
-                    Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_"+mPercent+".aln");
-                     Alignment na = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_"+mPercent+"NE.aln");
-                     System.out.print(df.format(roc.getAUC(classId, "_"+mPercent))+"\t"+df.format(roc.getAUC(classId, "_"+mPercent+"NE"))+"\t");
-//                    System.out.print(df.format(a.getMeanEntropy())+"\t");
-//                    System.out.print(df.format(na.getMeanEntropy())+"\t");
-                 }
+                System.out.println(classId);
+                     Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_0.aln");
+                     Alignment a20 = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_20.aln");
+
+                     for (int i = 0; i < a.getAlignmentLength(); i++) {
+                         if(a.isColumnMatch(i)) {
+                             System.out.print(i+"\t");
+                             System.out.print(df.format(bio.tools.Entropy.getEntropy(a.getColumn(i)))+"\t");
+                              System.out.print(df.format(a.computeNeighborhoodEntropy(i))+"\t");
+                              System.out.print(df.format(a20.computeNeighborhoodEntropy(i))+"\t");
+                              System.out.print(df.format(a.computeNeighborhoodEntropy(i,2))+"\t");
+                              System.out.print(df.format(a20.computeNeighborhoodEntropy(i,2))+"\t");
+                              System.out.print(df.format(a.computeNeighborhoodEntropy(i,1))+"\t");
+                              System.out.print(df.format(a20.computeNeighborhoodEntropy(i,1))+"\t");
+
+                             System.out.println();
+                         }
+
+                     }
+           
                  System.out.println();
 //                  Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_0.aln");
 //                    Alignment a1 = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_20.aln");
