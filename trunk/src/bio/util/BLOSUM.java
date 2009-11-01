@@ -63,6 +63,7 @@ public class BLOSUM {
         
     }
     public static char getRandom(char c) throws Exception {
+
         if(!loaded) {
             loadBlosum();
         }
@@ -82,7 +83,17 @@ public class BLOSUM {
         }
         return c;
     }
-    
+
+    public static char getRandom(char c,int n) throws Exception {
+        char origC =c;
+        int i =0;
+        while(i<100 && c==origC) {
+            c= getRandom(c);
+            i++;
+ //           System.out.println(i+"\t"+c+"\t"+origC);
+        }
+        return c;
+    }
     public static String getRandom(String s) throws Exception {
         int sub = (int)(Math.random()*(double)(s.length()-1));
         char subChar =  getRandom(s.charAt(sub));
