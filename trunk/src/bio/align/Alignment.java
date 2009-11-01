@@ -202,12 +202,20 @@ public class Alignment extends ArrayList<Sequence> {
     }
 
     public double[] computeProbilitiesOfMutationNE() throws Exception {
+         return computeProbilitiesOfMutationNE(NEIGHBORS,Conditions.FUNCTION_X);
+    }
+    public double[] computeProbilitiesOfMutationNE(int neighbors,String function) throws Exception {
         double probs[] = new double[alignmentLength];
         double[] neighborhoodEntropyInverse = new double[alignmentLength];
         double sumEInverse = 0.0;
         for (int i = 0; i < alignmentLength; i++) {
             if (isColumnMatch(i)) {
-                neighborhoodEntropyInverse[i] = 1 / computeNeighborhoodEntropy(i);
+                if(function.equals(Conditions.FUNCTION_EX)) {
+                    neighborhoodEntropyInverse[i] = 1 / Math.exp(computeNeighborhoodEntropy(i,neighbors));
+                } else {
+                    neighborhoodEntropyInverse[i] = 1 / computeNeighborhoodEntropy(i,neighbors);
+
+                }
                 sumEInverse += neighborhoodEntropyInverse[i];
             }
         }
@@ -246,9 +254,11 @@ public class Alignment extends ArrayList<Sequence> {
      *  added a specified mutation rate. N is the number of sequences added.
      * @param mutationRate
      * @param N
-     * @throws java.lang.Exception
-     */
-    public void appendMutatedSequences(double mutationRate, int N, String classId) throws Exception {
+     *
+     *
+     **/
+
+     public void appendMutatedSequences(double mutationRate, int N, String classId) throws Exception {
         ArrayList<Sequence> newSequences = new ArrayList<Sequence>();
         for (Sequence s : this) {
             String[] labelParts = s.label.split("\\|");
@@ -263,8 +273,11 @@ public class Alignment extends ArrayList<Sequence> {
 
         addAll(newSequences);
     }
-
     public void appendMutatedSequencesNE(double mutationRate, int N, String classId) throws Exception {
+        appendMutatedSequencesNE(Conditions.FUNCTION_X,NEIGHBORS,mutationRate,N,classId);
+    }
+
+    public void appendMutatedSequencesNE(String function,int neighbors,double mutationRate, int N, String classId) throws Exception {
         ArrayList<Sequence> newSequences = new ArrayList<Sequence>();
         for (Sequence s : this) {
             String[] labelParts = s.label.split("\\|");
@@ -272,7 +285,7 @@ public class Alignment extends ArrayList<Sequence> {
             for (int i = 1; i <= N; i++) {
                 Sequence sMutated = new Sequence();
                 sMutated.label = labelParts[0] + "|mut" + i + "|" + classId + "|";
-                sMutated.sequence = mutateNE(mutationRate, s.sequence);
+                sMutated.sequence = mutateNE(function,neighbors,mutationRate, s.sequence);
                 newSequences.add(sMutated);
             }
         }
@@ -303,22 +316,25 @@ public class Alignment extends ArrayList<Sequence> {
         int mutationPositions[] = bio.util.Probability.getRandomNumbers(mutations, probs);
         for (int i = 0; i < mutationPositions.length; i++) {
             int positionId = mutationPositions[i];
-            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId));
-            r = r.substring(0, positionId) + subChar + s.substring(positionId + 1);
+            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId),10000);
+            r = r.substring(0, positionId) + subChar + r.substring(positionId + 1);
         }
         return r;
     }
 
-    private String mutateNE(double mutationRate, String s) throws Exception {
+    private String mutateNE(String function,int neighbors,double mutationRate, String s) throws Exception {
         String r = s; //return string
-        double[] probs = computeProbilitiesOfMutationNE();
+        double[] probs = computeProbilitiesOfMutationNE(neighbors,function);
         int mutations = (int) (mutationRate * alignedColumns.size());
         int mutationPositions[] = bio.util.Probability.getRandomNumbers(mutations, probs);
         for (int i = 0; i < mutationPositions.length; i++) {
             int positionId = mutationPositions[i];
-            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId));
-            r = r.substring(0, positionId) + subChar + s.substring(positionId + 1);
+            char subChar = bio.util.BLOSUM.getRandom(r.charAt(positionId),10000);
+//            System.out.println(s+"\t"+r+"\t"+mutations+"\t"+bio.util.BLOSUM.compare(r,s)+"\t"+positionId+"\t"+r.charAt(positionId)+"\t"+subChar);
+
+            r = r.substring(0, positionId) + subChar + r.substring(positionId + 1);
         }
+//         System.out.println(s+"\t"+r+"\t"+mutations+"\t"+bio.util.BLOSUM.compare(r,s));
         return r;
     }
 
