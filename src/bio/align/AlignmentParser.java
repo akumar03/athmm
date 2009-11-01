@@ -51,20 +51,26 @@ public class AlignmentParser {
          bio.scop.AstralFileParser a = new bio.scop.AstralFileParser() {
             public void runMethod(String classId) throws Exception {
                 System.out.println(classId);
-                     Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_0.aln");
-                     Alignment a20 = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_20.aln");
+                     Alignment a = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_NONE_NONE_NONE_NONE.aln");
+                     Alignment a20 = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_NONE_NONE_20_10.aln");
+                        Alignment aX = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_2_X_20_10.aln");
+                    Alignment aEX = AlignmentParser.parse(bio.BioProperties.getString("exp.folder")+classId+"_2_EX_20_10.aln");
 
                      for (int i = 0; i < a.getAlignmentLength(); i++) {
                          if(a.isColumnMatch(i)) {
                              System.out.print(i+"\t");
                              System.out.print(df.format(bio.tools.Entropy.getEntropy(a.getColumn(i)))+"\t");
+                             System.out.print(df.format(bio.tools.Entropy.getEntropy(a20.getColumn(i)))+"\t");
+                             System.out.print(df.format(bio.tools.Entropy.getEntropy(aX.getColumn(i)))+"\t");
+                             System.out.print(df.format(bio.tools.Entropy.getEntropy(aEX.getColumn(i)))+"\t");
+/**                             System.out.print(df.format(bio.tools.Entropy.getEntropy(a20.getColumn(i)))+"\t");
                               System.out.print(df.format(a.computeNeighborhoodEntropy(i))+"\t");
                               System.out.print(df.format(a20.computeNeighborhoodEntropy(i))+"\t");
                               System.out.print(df.format(a.computeNeighborhoodEntropy(i,2))+"\t");
                               System.out.print(df.format(a20.computeNeighborhoodEntropy(i,2))+"\t");
                               System.out.print(df.format(a.computeNeighborhoodEntropy(i,1))+"\t");
                               System.out.print(df.format(a20.computeNeighborhoodEntropy(i,1))+"\t");
-
+**/
                              System.out.println();
                          }
 

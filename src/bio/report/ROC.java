@@ -91,14 +91,17 @@ public class ROC {
           ROC r = new ROC();
             HMMOutputParser h = new HMMOutputParser();
 
-         String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_HIT;
+         String fileName = bio.BioProperties.getString("exp.folder") + classId + "_NONE_NONE_NONE_NONE" + EXT_HIT;
           ArrayList<Hit> hits = h.parseHMMHitFile(fileName, classId);
 
          System.out.print(classId+"\t"+df.format(r.auc(hits)));
-         fileName =  bio.BioProperties.getString("exp.folder") + classId + "_20" + EXT_HIT;
+         fileName =  bio.BioProperties.getString("exp.folder") + classId + "_NONE_NONE_80_10" + EXT_HIT;
          hits = h.parseHMMHitFile(fileName, classId);
          System.out.print("\t"+df.format(r.auc(hits)));
-          fileName =  bio.BioProperties.getString("exp.folder") + classId + "_20NE" + EXT_HIT;
+          fileName =  bio.BioProperties.getString("exp.folder") + classId + "_2_X_80_10" + EXT_HIT;
+         hits = h.parseHMMHitFile(fileName, classId);
+         System.out.print("\t"+df.format(r.auc(hits)));
+          fileName =  bio.BioProperties.getString("exp.folder") + classId + "_2_EX_80_10" + EXT_HIT;
          hits = h.parseHMMHitFile(fileName, classId);
          System.out.print("\t"+df.format(r.auc(hits)));
          System.out.println();

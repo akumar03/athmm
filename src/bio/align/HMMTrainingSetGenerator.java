@@ -97,31 +97,84 @@ public class HMMTrainingSetGenerator {
     }
 
     public void createMutatedTrainingSets(String classId) throws Exception {
-
-
         for(int mPercent =10;mPercent<=60;mPercent+= 10) {
-
             createMutatedHMMTrainingSet(classId,mPercent);
-             createNEHMMTrainingSet(classId,mPercent);;
+            createNEHMMTrainingSet(classId,mPercent);;
 
         }
     }
 
-    
+    public void createExpTraningSetsForClass(String classId) throws Exception{
+        //control condition without mutations
+        createTrainingSet(classId,Conditions.NONE,Conditions.NONE,Conditions.NONE,Conditions.NONE);
+        createTrainingSet(classId,Conditions.NONE,Conditions.NONE,"80","10");
+        createTrainingSet(classId,"2","X","80","10");
+        createTrainingSet(classId,"2","EX","80","10");
+
+    }
+    public void createTrainingSet(String classId,String neighbors,String function,String rate,String n) throws Exception {
+        if(n.equals(Conditions.NONE)) {
+            createControlDataset(classId);
+        } else if(function.equals(Conditions.NONE)) {
+            createTSNoFunction(classId,rate,n);
+        } else if(function.equals("X")) {
+            createTSX(classId,neighbors,rate,n);
+        } else if(function.equals("EX")) {
+            createTSEX(classId,neighbors,rate,n);
+        }
+
+    }
+
+    public void createControlDataset(String classId) throws Exception{
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+Conditions.NONE + "_"+Conditions.NONE + "_"+Conditions.NONE + "_"+Conditions.NONE + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        alignment.write(writer);
+    }
+
+    public void createTSNoFunction(String classId, String rate,String n) throws Exception {
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+Conditions.NONE + "_"+Conditions.NONE + "_"+rate + "_"+n + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        double mRate = Double.parseDouble(rate)/100;
+        alignment.appendMutatedSequences( mRate, Integer.parseInt(n), classId);
+        alignment.write(writer);
+    }
+
+  public void createTSX(String classId, String neighbors,String rate,String n) throws Exception {
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+neighbors+ "_"+"X"+ "_"+rate + "_"+n + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        double mRate = Double.parseDouble(rate)/100;
+        alignment.appendMutatedSequencesNE(Conditions.FUNCTION_X,Integer.parseInt(neighbors),mRate, Integer.parseInt(n), classId);
+        alignment.write(writer);
+    }
+
+   public void createTSEX(String classId, String neighbors,String rate,String n) throws Exception {
+        String fileName = bio.BioProperties.getString("exp.folder") + classId + "_0" + EXT_ALN;
+        String outFileName = bio.BioProperties.getString("exp.folder") + classId + "_"+neighbors+ "_"+"EX"+ "_"+rate + "_"+n + EXT_ALN;
+        FileWriter writer = new FileWriter(outFileName);
+        Alignment alignment = AlignmentParser.parse(fileName);
+        double mRate = Double.parseDouble(rate)/100;
+        alignment.appendMutatedSequencesNE(Conditions.FUNCTION_EX,Integer.parseInt(neighbors),mRate, Integer.parseInt(n), classId);
+        alignment.write(writer);
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        
+        System.out.println("Generating all training sets");
         HMMTrainingSetGenerator h = new HMMTrainingSetGenerator();
-//        h.createAllTrainingSet();
-//        h.createNEHMMTrainingSet("d.2.1.3");
-         AstralFileParser a = new AstralFileParser();
+        AstralFileParser a = new AstralFileParser();
         ArrayList<String> classList = a.readStatFile();
         for (String classId : classList) {
             System.out.println("Generating Datasets for:"+classId);
-            h.createMutatedTrainingSets(classId);
+            h.createExpTraningSetsForClass(classId);
         }
     }
 }
