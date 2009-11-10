@@ -3,8 +3,9 @@
 # Date: 11/06/2009
 # Description: The program appends sequences with beta mutations
 
-
+use lib "/cluster/tufts/protein/se2/athmm/perl";
 use strict;
+use Beta;
 
 my $PROTEIN_LETTERS = "ACDEFGHIKLMNPQRSTVWY";
 my $exposed_file = "ExposedProbability.csv";
