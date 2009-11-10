@@ -17,9 +17,14 @@ my $out_file = "b.1.1.3_0_matt_mut.ssi";
 
 open(OUT,">$out_file");
 
+# reading the ssi files
 open(SSI,$ssi_file);
-@ssi_lines = <SSI>;
+while(my $line = <SSI>) {
+
+}
 close(SSI);
+
+#read the 
 
 
 
