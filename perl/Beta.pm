@@ -1,3 +1,4 @@
+#!/usr/bin/perl 
 package Beta;
 
 sub new {
@@ -7,15 +8,10 @@ sub new {
    _strand2 => shift,
    _length => shift,
    _parellel => shift,
-   _conformation => shift,
+   _conformation => shift
   };
   bless $self,$class;
   return $self;
-}
-
-sub getStrand1 {
-    my( $self ) = @_;
-    return $self->{_strand1};
 }
 
 sub getStrand1 {
@@ -38,3 +34,4 @@ sub getConformation {
     my( $self ) = @_;
     return $self->{_cornformation};
 }
+1;
