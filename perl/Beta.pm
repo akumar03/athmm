@@ -8,7 +8,7 @@ sub new {
    _strand2 => shift,
    _length => shift,
    _parellel => shift,
-   _conformation => shift
+   _conformation => shift,
   };
   bless $self,$class;
   return $self;
@@ -32,6 +32,7 @@ sub getParellel {
 }
 sub getConformation {
     my( $self ) = @_;
-    return $self->{_cornformation};
+    return $self->{_conformation};
 }
+
 1;
