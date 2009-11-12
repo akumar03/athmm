@@ -12,6 +12,10 @@ my $N = 10; # mumber of mutated sequences to be added
 my $exposed_file = "ExposedProbability.csv";
 my $burried_file = "BurriedProbability.csv";
 
+#read the 
+my @exposed_prob = read_probabiliy_file($exposed_file);
+my @burried_prob = read_probabiliy_file($burried_file);
+
 
 my $ssi_file = "b.1.1.3_0_matt.ssi";
 
@@ -23,7 +27,6 @@ my $total_beta=0;
 
 srand(1);
 
-open(OUT,">$out_file");
 
 # reading the ssi files
 open(SSI,$ssi_file);
@@ -46,18 +49,17 @@ print "Total beta = $total_beta\n";
 #adding mutated sequences
 for(my $i=0;$i<=$#sequences;$i++) {
 #  print $sequences[$i];
-  add_beta_mutations($sequences[$i],10);
+ push(@new_sequences,$sequences[$i]);
+ for(my $j =0;$j<$N;$j++) {
+  my $new_sequence = get_beta_mutated_sequence($sequences[$i],10,$j);
+  push(@new_sequences,$new_sequence);
+ }
 }
  
 
 close(SSI);
 
-#read the 
-
-my @exposed_prob = read_probabiliy_file($exposed_file);
-my @burried_prob = read_probabiliy_file($burried_file);
-
-
+write_out_file();
 
 
 # This method reads the probability file
@@ -78,9 +80,11 @@ sub read_probabiliy_file {
 }
 
 # Adds beta mutations to sequence with %mutations per total length of betas;
-sub add_beta_mutations  {
+sub get_beta_mutated_sequence{
  my $sequence = shift;
  my $percent = shift; 
+ my $count = shift;
+ 
  my $position = int(rand($total_beta));
  my $position_pointer  = $position;
  my $mutate_position = -1;
@@ -139,9 +143,49 @@ sub add_beta_mutations  {
      $mutated_position = $selected_beta->getStrand1()+$pointer;
   }
  }
+ my @seq_words= split(/\s+/,$sequence);
+ my $seq_letters = @seq_words[1];
+ my $seq_label = @seq_words[0];
+ my $aa = substr($seq_letters,$mutate_position,1); 
+ my $aa_mutated = get_mutated_aa($aa,$is_burried);
+ my $seq_mutated = substr($seq_letters,0,$mutated_position).$aa_mutated.substr($seq_letters,$mutated_position+1);
+ my $new_sequence = $seq_label."_m".$count."         ".$seq_mutated;
 
  print "$position $mutate_position $mutated_position $is_burried\n";
- 
+ print $sequence;
+ print "$new_sequence\n";
+ return $new_sequence."\n";
  
 }
 
+sub get_mutated_aa {
+ my $aa = shift;
+ my $is_burried = shift;
+ my @table = @exposed_prob;
+ if($is_burried) {
+   @table = @burried_prob;
+ }
+ my $random = rand();
+ my $aa_index = index($PROTEIN_LETTERS,$aa);
+ my $mutate_index =0;
+ for(my $i=0;$i<20 && $random >0;$i++) {
+   $random -= $table[$aa_index][$i];
+   $mutate_index = $i;
+ }
+# return "X";
+ return substr($PROTEIN_LETTERS,$mutate_index,1);
+
+}
+
+# write output sequences with mutated sequences
+
+sub write_out_file {
+
+  open(OUT,">$out_file");
+  print OUT "# STOCKHOLM 1.0\n";
+  for(my $i=0;$i<= $#new_sequences;$i++) {
+     print OUT $new_sequences[$i];
+  }
+  print OUT "//\n";
+  close OUT;
+}
