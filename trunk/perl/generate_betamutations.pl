@@ -9,6 +9,7 @@ use Beta;
 
 my $PROTEIN_LETTERS = "ACDEFGHIKLMNPQRSTVWY";
 my $N = 10; # mumber of mutated sequences to be added
+my $PERCENT = 50;
 my $exposed_file = "ExposedProbability.csv";
 my $burried_file = "BurriedProbability.csv";
 
@@ -19,7 +20,7 @@ my @burried_prob = read_probabiliy_file($burried_file);
 
 my $ssi_file = "b.1.1.3_0_matt.ssi";
 
-my $out_file = "b.1.1.3_0_matt_mut.ssi";
+my $out_file = "b.1.1.3_0_matt_".$PERCENT.".ssi";
 my @betas;
 my @sequences;
 my @new_sequences;
@@ -37,7 +38,7 @@ while(my $line = <SSI>) {
   $total_beta += $words[3];  # assuming no overlap
   push(@betas,$beta);
  }
- if($line =~ m/^d/) {
+  if($line =~ m/^d/) {
    push (@sequences,$line);
  } 
 }
@@ -51,7 +52,7 @@ for(my $i=0;$i<=$#sequences;$i++) {
 #  print $sequences[$i];
  push(@new_sequences,$sequences[$i]);
  for(my $j =0;$j<$N;$j++) {
-  my $new_sequence = get_beta_mutated_sequence($sequences[$i],10,$j);
+  my $new_sequence = get_beta_mutated_sequence($sequences[$i],$PERCENT,$j);
   push(@new_sequences,$new_sequence);
  }
 }
@@ -85,6 +86,12 @@ sub get_beta_mutated_sequence{
  my $percent = shift; 
  my $count = shift;
  
+ my @seq_words= split(/\s+/,$sequence);
+ my $seq_letters = @seq_words[1];
+ my $seq_label = @seq_words[0];
+
+ my $mutations = int(($percent*$total_beta/100)+0.5);
+ for(my $j = 0;$j< $mutations;$j++) {
  my $position = int(rand($total_beta));
  my $position_pointer  = $position;
  my $mutate_position = -1;
@@ -114,7 +121,6 @@ sub get_beta_mutated_sequence{
          if(substr(reverse($beta->getConformation()),$position_pointer,1) eq 'i') {
  	   $is_burried = 1;
          }
-
        } else {
          if(substr($beta->getConformation(),$position_pointer,1) eq 'i') {
  	   $is_burried = 1;
@@ -143,15 +149,16 @@ sub get_beta_mutated_sequence{
      $mutated_position = $selected_beta->getStrand1()+$pointer;
   }
  }
- my @seq_words= split(/\s+/,$sequence);
- my $seq_letters = @seq_words[1];
- my $seq_label = @seq_words[0];
  my $aa = substr($seq_letters,$mutate_position,1); 
  my $aa_mutated = get_mutated_aa($aa,$is_burried);
  my $seq_mutated = substr($seq_letters,0,$mutated_position).$aa_mutated.substr($seq_letters,$mutated_position+1);
- my $new_sequence = $seq_label."_m".$count."         ".$seq_mutated;
-
+ $seq_letters = $seq_mutated;
  print "$position $mutate_position $mutated_position $is_burried\n";
+ }
+ my $new_sequence = $seq_label."_m".$count."         ".$seq_letters;
+
+# print "$position $mutate_position $mutated_position $is_burried\n";
+# print "$position $mutate_position $mutated_position $is_burried\n";
  print $sequence;
  print "$new_sequence\n";
  return $new_sequence."\n";
