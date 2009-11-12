@@ -3,17 +3,27 @@
 # Date : 09/03/08
 # Description : A program that finds hmms that match a sequence
 
-$prog = "/r/bcb/anoop/soft/hmmer-2.3.2/bin/hmmsearch -E 1000  ";
+$prog = "hmmer/hmmer-3.0a2/src/hmmsearch -E 1000 --max ";
 $exp_file = "Scop95.csv";
 print "reading exp file $exp_file";
 open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
-while($line = <INPUT>){
+$count =0;
+while($line = <INPUT> && $count <1){
  print "Reading line $line";
  @words = split(',',$line);
- for($j=0;$j<=25;$j+=5) {
-  $exp_class = $words[0]."_".$j;
-  $com1 = $prog.$exp_class.".hmm ".$words[0]."_test.fasta > ".$exp_class."_S.hit";
-   print "Executing:  $com1\n";
-  print `$com1`;
+#running the default search
+$com = $prog.$exp_class."_0.hmm ".$words[0]."_test.fasta > ".$exp_class."_0.hit";
+   print "Executing:  $com\n";
+  print `$com`;
+#mutated 
+$com = $prog.$exp_class."_20.hmm ".$words[0]."_test.fasta > ".$exp_class."_20.hit";
+   print "Executing:  $com\n";
+  print `$com`;
+ for($j=10;$j<=50;$j+=10) {
+  $exp_class = $words[0]."_0_matt_".$j;
+  $com = $prog.$exp_class.".hmm ".$words[0]."_test.fasta > ".$exp_class."_.hit";
+   print "Executing:  $com\n";
+  print `$com`;
  }
+ $count++;
 }
