@@ -18,9 +18,6 @@ my @exposed_prob = read_probabiliy_file($exposed_file);
 my @burried_prob = read_probabiliy_file($burried_file);
 
 
-my $ssi_file = "b.1.1.3_0_matt.ssi";
-
-my $out_file = "b.1.1.3_0_matt_".$PERCENT.".ssi";
 my @betas;
 my @sequences;
 my @new_sequences;
@@ -28,8 +25,21 @@ my $total_beta=0;
 
 srand(1);
 
+my $exp_file = $ARGV[0];
+print "reading exp file $exp_file";
 
 # reading the ssi files
+open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
+while(my $exp_line = <INPUT>){
+my @exp_words = split(',',$exp_line);
+my $ssi_file = $exp_words[0]."_0_matt.ssi";
+for(my $percent=10;$percent<=50;$percent += 10) {
+@betas = ();
+@sequences = ();
+@new_sequences = ();
+$total_beta = 0;
+my $out_file = $exp_words[0]."_0_matt_".$percent.".ssi";
+print "Generating dataset for $ssi_file $out_file\n";
 open(SSI,$ssi_file);
 while(my $line = <SSI>) {
  if($line =~ m/^#=/) {
@@ -42,7 +52,6 @@ while(my $line = <SSI>) {
    push (@sequences,$line);
  } 
 }
-
 $total_beta *=2;
 
 
@@ -52,7 +61,7 @@ for(my $i=0;$i<=$#sequences;$i++) {
 #  print $sequences[$i];
  push(@new_sequences,$sequences[$i]);
  for(my $j =0;$j<$N;$j++) {
-  my $new_sequence = get_beta_mutated_sequence($sequences[$i],$PERCENT,$j);
+  my $new_sequence = get_beta_mutated_sequence($sequences[$i],$percent,$j);
   push(@new_sequences,$new_sequence);
  }
 }
@@ -60,8 +69,9 @@ for(my $i=0;$i<=$#sequences;$i++) {
 
 close(SSI);
 
-write_out_file();
-
+write_out_file($out_file);
+}
+}
 
 # This method reads the probability file
 sub read_probabiliy_file {
@@ -187,7 +197,7 @@ sub get_mutated_aa {
 # write output sequences with mutated sequences
 
 sub write_out_file {
-
+  my $out_file = shift;
   open(OUT,">$out_file");
   print OUT "# STOCKHOLM 1.0\n";
   for(my $i=0;$i<= $#new_sequences;$i++) {
