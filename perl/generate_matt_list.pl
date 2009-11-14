@@ -9,7 +9,7 @@ my $exp_file = $ARGV[0];
 print "reading exp file $exp_file";
 
 open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
-if( my $line = <INPUT>){
+while( my $line = <INPUT>){
  print "Reading line $line\n";
  my @words = split(',',$line);
  my $family_id = $words[0];
@@ -26,9 +26,19 @@ if( my $line = <INPUT>){
   }
  }
  close FAM;
- open(OUT,">".$f_line.".lst");
+ open(OUT,">".$family_id.".lst");
  print OUT $pdbs;
- close OUT
+ close OUT;
+# execute matt
+ my $com = "/cluster/tufts/protein/se2/Matt -o ".$family_id."_0_matt -L ".$family_id.".lst";
+ print "Executing: $com\n";
+ print `$com`;
+
+# execute smurf
+ $com = "/cluster/tufts/protein/se2/smurf/SmurfPreparse ".$family_id."_0_matt";
+ print "Executing: $com\n";
+ print `$com`;
+ 
 # }
 }
 close INPUT;
