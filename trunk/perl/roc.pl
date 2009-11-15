@@ -64,7 +64,7 @@ while($new_threshold < $threshold) {
   $fp_rate = $fp/$n;
    
   $auc += ($tp_rate+$old_tp_rate)*($fp_rate - $old_fp_rate)/2;
-  print "$threshold $new_threshold $p $n $tp $tn $fp_rate($old_fp_rate) $tp_rate($old_tp_rate) $auc\n";
+  print "$threshold $new_threshold $p $n $tp $tn $fp_rate $tp_rate $auc\n";
   $old_tp_rate = $tp_rate;
   $old_fp_rate = $fp_rate;
 }
