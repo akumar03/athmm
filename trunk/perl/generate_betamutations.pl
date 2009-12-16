@@ -23,10 +23,16 @@ my @sequences;
 my @new_sequences;
 my $total_beta=0;
 
-srand(1);
 
 my $exp_file = $ARGV[0];
-print "reading exp file $exp_file";
+print "reading exp file $exp_file\n";
+if($ARGV[1]) {
+  srand($ARGV[1]);
+}
+
+if($ARGV[2]) {
+ $PERCENT = $ARGV[2];
+}
 
 # reading the ssi files
 open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
