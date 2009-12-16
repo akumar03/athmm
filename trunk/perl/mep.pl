@@ -1,7 +1,7 @@
-# Program: roc.pl
+# Program: mep.pl
 # Developed by : Anoop Kumar
-# Date: 11/11/2009
-# Description: functions for computing ROC
+# Date: 12/16/2009
+# Description: functions for computing MEP( total errors at minimum error point)
 
 use strict;
 
@@ -18,6 +18,7 @@ while(my $line =<IN>) {
  $count++;
 }
 close IN;
+my $mep =100;
 my $old_tp_rate =0;
 my $old_fp_rate =0;
 my $auc = 0;
@@ -62,12 +63,16 @@ while($new_threshold < $threshold) {
   }
   $tp_rate = $tp/$p;
   $fp_rate = $fp/$n;
-   
+  my $total_errors = $fp+$fn; 
+  my $error_percent = $total_errors*100/($p+$n);
+  if($error_percent < $mep) { 
+    $mep = $error_percent;
+  }
   $auc += ($tp_rate+$old_tp_rate)*($fp_rate - $old_fp_rate)/2;
-  print "$threshold $new_threshold $p $n $tp $tn $fp_rate $tp_rate $auc\n";
+  print "$threshold $new_threshold $p $n $mep $error_percent $tp $tn $fp_rate $tp_rate $auc\n";
   $old_tp_rate = $tp_rate;
   $old_fp_rate = $fp_rate;
 }
-open (ROC,">roc.txt");
-print ROC $auc;
-close ROC;
+open (MEP,">mep.txt");
+print MEP $mep;
+close MEP;

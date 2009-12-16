@@ -8,7 +8,7 @@ use strict;
 use Beta;
 
 my $PROTEIN_LETTERS = "ACDEFGHIKLMNPQRSTVWY";
-my $N = 10; # mumber of mutated sequences to be added
+my $N = 1000; # mumber of mutated sequences to be added
 my $PERCENT = 50;
 my $exposed_file = "ExposedProbability.csv";
 my $burried_file = "BurriedProbability.csv";
