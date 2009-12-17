@@ -8,7 +8,7 @@ use strict;
 use Beta;
 
 my $PROTEIN_LETTERS = "ACDEFGHIKLMNPQRSTVWY";
-my $N = 1000; # mumber of mutated sequences to be added
+my $N = 10; # mumber of mutated sequences to be added
 my $PERCENT = 50;
 my $exposed_file = "ExposedProbability.csv";
 my $burried_file = "BurriedProbability.csv";
@@ -32,6 +32,10 @@ if($ARGV[1]) {
 
 if($ARGV[2]) {
  $PERCENT = $ARGV[2];
+}
+
+if($ARGV[3])  {
+ $N = $ARGV[3];
 }
 
 # reading the ssi files
