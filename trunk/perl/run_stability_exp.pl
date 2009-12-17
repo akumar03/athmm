@@ -24,9 +24,9 @@ while(my $exp_line = <INPUT>){
 close INPUT;
 print OUT "\n";
 
-for(my $i=0;$i<1;$i++) {
+for(my $i=0;$i<41;$i++) {
  print OUT "$i\t";
-  my $com = "perl athmm/perl/generate_betamutations.pl $exp_file $i $N";
+  my $com = "perl athmm/perl/generate_betamutations.pl $exp_file $i $MUTATION $N";
   
   print "$com\n";
   print `$com`;
