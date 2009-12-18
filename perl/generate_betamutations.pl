@@ -43,7 +43,8 @@ open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
 while(my $exp_line = <INPUT>){
 my @exp_words = split(',',$exp_line);
 my $ssi_file = $exp_words[0]."_0_matt.ssi";
-for(my $percent=10;$percent<=50;$percent += 10) {
+my $percent = $PERCENT;
+# for(my $percent=10;$percent<=50;$percent += 10) {
 @betas = ();
 @sequences = ();
 @new_sequences = ();
@@ -80,7 +81,7 @@ for(my $i=0;$i<=$#sequences;$i++) {
 close(SSI);
 
 write_out_file($out_file);
-}
+#}
 }
 
 # This method reads the probability file
@@ -173,14 +174,14 @@ sub get_beta_mutated_sequence{
  my $aa_mutated = get_mutated_aa($aa,$is_burried);
  my $seq_mutated = substr($seq_letters,0,$mutated_position).$aa_mutated.substr($seq_letters,$mutated_position+1);
  $seq_letters = $seq_mutated;
- print "$position $mutate_position $mutated_position $is_burried\n";
+# print "$position $mutate_position $mutated_position $is_burried\n";
  }
  my $new_sequence = $seq_label."_m".$count."         ".$seq_letters;
 
 # print "$position $mutate_position $mutated_position $is_burried\n";
 # print "$position $mutate_position $mutated_position $is_burried\n";
- print $sequence;
- print "$new_sequence\n";
+# print $sequence;
+# print "$new_sequence\n";
  return $new_sequence."\n";
  
 }
