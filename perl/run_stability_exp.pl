@@ -5,6 +5,7 @@
 
 
 use strict;
+use Time::HiRes qw(usleep);
 
 my $exp_file = $ARGV[0];
 my $N = $ARGV[1];
@@ -46,6 +47,7 @@ for(my $i=0;$i<41;$i++) {
     print `$com`;
     my $mep = read_mep();
     print OUT "$mep\t"; 
+    usleep(100);
     print "$exp_class MEP $mep\n"; 
   }
     print OUT "\n"; 

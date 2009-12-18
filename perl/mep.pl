@@ -69,7 +69,7 @@ while($new_threshold < $threshold) {
     $mep = $error_percent;
   }
   $auc += ($tp_rate+$old_tp_rate)*($fp_rate - $old_fp_rate)/2;
-  print "$threshold $new_threshold $p $n $mep $error_percent $tp $tn $fp_rate $tp_rate $auc\n";
+#  print "$threshold $new_threshold $p $n $mep $error_percent $tp $tn $fp_rate $tp_rate $auc\n";
   $old_tp_rate = $tp_rate;
   $old_fp_rate = $fp_rate;
 }
