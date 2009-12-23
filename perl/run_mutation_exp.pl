@@ -26,20 +26,20 @@ while(my $exp_line = <INPUT>){
 close INPUT;
 print OUT "\n";
 
-for(my $i=0;$i<1;$i++) {
+for(my $i=0;$i<40;$i++) {
    print OUT "$i\t";
   open(INPUT,$exp_file) or die("Can't open the input file: $exp_file");
   while(my $exp_line = <INPUT>){
     my @exp_words = split(',',$exp_line);
     my $exp_class =  $exp_words[0];
     my $exp_class_file =  $exp_class."_".$MUTATION."_a".$N;
-    my $com = $PATH."generate_mutations.pl $exp_class $N $i";
+    my $com ="perl ".$PATH."generate_mutations.pl $exp_class $N $i";
     print "$com\n";
     print `$com`;
     $com = "/cluster/tufts/protein/muscle/mus4 -i ".$exp_class_file.".fasta -o ".$exp_class_file.".aln";
     print "$com\n";
     print `$com`;
-    $com = $PATH."aln2ssi.pl $exp_class_file";
+    $com = "perl ".$PATH."aln2ssi.pl $exp_class_file";
     print "$com\n";
     print `$com`;
     $com = "/cluster/tufts/protein/se2/hmmer/hmmer-3.0a2/src/hmmbuild ".$exp_class_file.".hmm $exp_class_file.ssi";
