@@ -26,7 +26,7 @@ print OUT "\n";
    my @exp_words = split(',',$exp_line);
    my $exp_class = $exp_words[0];
    print  OUT "$exp_class\t"; 
-   my $com = "perl /cluster/tufts/protein/se2/athmm/perl/auc.pl ".$exp_class."_0.hit";
+   my $com = "perl /cluster/tufts/protein/se2/athmm/perl/roc.pl ".$exp_class."_0.hit";
    print "$com\n";
    print `$com`;
    my $auc0 = read_roc();
@@ -36,7 +36,7 @@ print OUT "\n";
    for(my $mrate = $MIN_RATE;$mrate<=$MAX_RATE;$mrate +=10) {
     $exp_class =  $exp_words[0]."_0_matt_".$mrate;
     my $ssi_file = $exp_words[0]."_0_matt_".$mrate.".ssi";
-    $com = "perl /cluster/tufts/protein/se2/athmm/perl/auc.pl ".$exp_class.".hit";
+    $com = "perl /cluster/tufts/protein/se2/athmm/perl/roc.pl ".$exp_class.".hit";
     print "$com\n";
     print `$com`;
     my $auc = read_roc();
