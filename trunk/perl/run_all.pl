@@ -52,6 +52,7 @@ print OUT "\n";
   while(my $exp_line = <INPUT>){
    my @exp_words = split(',',$exp_line);
    my $exp_class = $exp_words[0];
+   @sequences = ();
    print  OUT "$exp_class\t"; 
    my $com = "/cluster/tufts/protein/se2/hmmer/hmmer-3.0a2/src/hmmbuild ".$exp_class."_0_0.hmm ".$exp_class."_0_matt.ssi";
    print "$com\n";
@@ -85,7 +86,6 @@ print OUT "\n";
    for(my $mrate = 0;$mrate<=$MAX_RATE;$mrate +=10) {
     for(my $srate=0;$srate<=$MAX_SRATE;$srate +=5) {
       @new_sequences = ();
-
 #adding beta mutated sequences
     for(my $i=0;$i<=$#sequences;$i++) {
        push(@new_sequences,$sequences[$i]);
@@ -121,6 +121,7 @@ print OUT "\n";
     my $mep = read_mep();
     print OUT $mep."\t"; 
     print "$exp_class MEP $mep\n"; 
+    usleep(100);
     }
    }
     print OUT "\n"; 
