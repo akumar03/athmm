@@ -85,6 +85,7 @@ print OUT "\n";
     close (SSI);
    for(my $mrate = 0;$mrate<=$MAX_RATE;$mrate +=10) {
     for(my $srate=0;$srate<=$MAX_SRATE;$srate +=5) {
+      print "Running $exp_class $mrate $srate\n";
       @new_sequences = ();
 #adding beta mutated sequences
     for(my $i=0;$i<=$#sequences;$i++) {
@@ -96,7 +97,6 @@ print OUT "\n";
         }
        }
        if($srate>0) {
-
         for(my $j =0;$j<$N;$j++) {
  	  push(@new_sequences,get_mutated_sequence($sequences[$i],$j,$srate));
          }
@@ -350,10 +350,13 @@ sub get_mutated_sequence {
   my $seq_label = $s_parts[0];
   my $sequence = $s_parts[1];
   my $n_mutations = int($mutations*length($sequence)/100+0.5);
+ 
   for(my $i = 0;$i<$n_mutations;$i++) {
     my $mutation_index = int(rand()*length($sequence));
-    while(substr($sequence,$mutation_index,1) ne "-") {
+    my $trial =0;
+    while(substr($sequence,$mutation_index,1) ne "-" && $trial < 50) {
       $mutation_index = int(rand()*length($sequence));
+      $trial++;
     }
     $sequence = substr($sequence,0,$mutation_index).get_random(substr($sequence,$mutation_index,1)).substr($sequence,$mutation_index+1);
   }
