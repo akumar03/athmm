@@ -53,6 +53,7 @@ print OUT "\n";
    my @exp_words = split(',',$exp_line);
    my $exp_class = $exp_words[0];
    @sequences = ();
+   @betas = ();
    print  OUT "$exp_class\t"; 
    my $com = "/cluster/tufts/protein/se2/hmmer/hmmer-3.0a2/src/hmmbuild ".$exp_class."_0_0.hmm ".$exp_class."_0_matt.ssi";
    print "$com\n";
