@@ -27,7 +27,7 @@ print OUT "\n";
 
 for(my $i=0;$i<41;$i++) {
  print OUT "$i\t";
-  my $com = "perl athmm/perl/generate_betamutations.pl $exp_file $i $MUTATION $N";
+  my $com = "perl /cluster/tufts/protein/se2/athmm/perl/generate_betamutations.pl $exp_file $i $MUTATION $N";
   
   print "$com\n";
   print `$com`;
@@ -39,10 +39,10 @@ for(my $i=0;$i<41;$i++) {
     $com = "/cluster/tufts/protein/se2/hmmer/hmmer-3.0a2/src/hmmbuild ".$exp_class.".hmm $ssi_file";
     print "$com\n";
     print `$com`;
-    $com = "hmmer/hmmer-3.0a2/src/hmmsearch -E 1000 --max ".$exp_class.".hmm ".$exp_words[0]."_test.fasta > ".$exp_class.".hit";
+    $com = "/cluster/tufts/protein/se2/hmmer/hmmer-3.0a2/src/hmmsearch -E 1000 --max ".$exp_class.".hmm ".$exp_words[0]."_test.fasta > ".$exp_class.".hit";
     print "$com\n";
     print `$com`;
-    $com = "perl athmm/perl/mep.pl ".$exp_class.".hit";
+    $com = "perl /cluster/tufts/protein/se2/athmm/perl/mep.pl ".$exp_class.".hit";
     print "$com\n";
     print `$com`;
     my $mep = read_mep();
